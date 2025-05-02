@@ -7,11 +7,15 @@ using UnityEngine.UI;
 public class FundsManager : MonoBehaviour
 {
     [Header("INT")]
-    public int FundsAmount;
+    public int FundsAmount = 200;
     public int RestoreHealthAmount;
+    public int RestoreCost = 100;
     public int BombAmount;
+    public int BombCost = 100;
     public int FreezeAmount;
+    public int FreezeCost = 100;
     public int ShieldAmount;
+    public int ShieldCost = 100;
     public int LevelGeneratedFunds;
     public int DodgeLevel;
     public int DodgeCost;
@@ -20,13 +24,18 @@ public class FundsManager : MonoBehaviour
     public int ProgressLevel;
     public int ProgressCost;
     public int MinionState;
+    public int AllieCost = 500;
 
     [Header("Text")]
     public Text[] FundsText;
     public Text[] RestoreText;
+    public Text[] RestoreCostText;
     public Text[] BombText;
+    public Text[] BombCostText;
     public Text[] FreezeText;
+    public Text[] FreezeCostText;
     public Text[] ShieldText;
+    public Text[] ShieldCostText;
     public Text[] LevelGeneratedFundsText;
     public Text[] DodgeLevelText;
     public Text[] DodgeCostText;
@@ -34,6 +43,7 @@ public class FundsManager : MonoBehaviour
     public Text[] AttackLevelText;
     public Text[] ProgressLevelText;
     public Text[] ProgressCostText;
+    public Text[] AllieCostText;
 
     private const string Fundskey = "Funds";
     private const string RestoreKey = "Restore";
@@ -47,8 +57,15 @@ public class FundsManager : MonoBehaviour
     private const string ProgressCostKey = "ProgressCost";
     private const string ProgressLevelKey = "ProgressLevel";
     private const string MinionPrefs = "MinionKey";
+    private const string RestoreCostkey = "RestoreCost";
+    private const string BombCostkey = "BombCost";
+    private const string FreezeCostkey = "FreezeCost";
+    private const string ShieldCostkey = "ShieldCost";
+    private const string AllieCostkey = "AllieCost";
+
 
     public Button MinionButton;
+    public Attack attack;
 
     void Start()
     {
@@ -62,24 +79,49 @@ public class FundsManager : MonoBehaviour
         UpdateAllTexts(DodgeLevelText, DodgeLevel);
         UpdateAllTexts(DodgeCostText, DodgeCost);
         UpdateAllTexts(AttackCostText, AttackCost);
+        UpdateAllTexts(RestoreCostText, RestoreCost);
+        UpdateAllTexts(BombCostText, BombCost);
+        UpdateAllTexts(FreezeCostText, FreezeCost);
+        UpdateAllTexts(ShieldCostText, ShieldCost);
+        UpdateAllTexts(AllieCostText, AllieCost);
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
             AttackLevelText[0].text = "+ " + AttackLevel.ToString() + " Damage";
-            MinionButton.interactable = false;
             if (MinionState == 0)
             {
                 MinionButton.interactable = true;
             }
+            if (MinionState == 3)
+            {
+                MinionButton.interactable = false;
+            }
            
         }
-        if (MinionState == 1)
-        {
-            ProgressLevel += 50;
-            SaveProgressLevel();
-            MinionState = 2;
-            LoadMinion();
-            MinionButton.interactable = false;
-        }
+        //if (MinionState == 1)
+        //{
+        //    ProgressLevel += 50;
+        //    attack.MinionAllie.gameObject.SetActive(true);
+        //    attack.Enemies[0].gameObject.SetActive(true);
+        //    SaveProgressLevel();
+        //    LoadMinion();
+        //}
+        //if (MinionState == 2)
+        //{
+        //    ProgressLevel += 100;
+        //    attack.MinionAllie.gameObject.SetActive(true);
+        //    attack.Allie2.gameObject.SetActive(true);
+        //    attack.Enemies[0].gameObject.SetActive(true);
+        //    attack.Enemies[1].gameObject.SetActive(true);
+        //    SaveProgressLevel();
+        //    LoadMinion();
+        //}
+        //if (MinionState == 3)
+        //{
+        //    ProgressLevel += 150;
+        //    SaveProgressLevel();
+        //    LoadMinion();
+        //    MinionButton.interactable = true;
+        //}
 
         UpdateAllTexts(ProgressCostText, ProgressCost);
         ProgressLevelText[0].text = ProgressLevel.ToString();
@@ -88,7 +130,9 @@ public class FundsManager : MonoBehaviour
     void Awake()
     {
         ProgressLevel = PlayerPrefs.GetInt(ProgressLevelKey, ProgressLevel);
+        LoadFunds();
         ProgressLevelText[0].text = ProgressLevel.ToString();
+        MinionState = PlayerPrefs.GetInt(MinionPrefs, MinionState);
     }
 
     void Update()
@@ -97,7 +141,6 @@ public class FundsManager : MonoBehaviour
 
     public void LoadBalance()
     {
-        FundsAmount = PlayerPrefs.GetInt(Fundskey, FundsAmount);
         RestoreHealthAmount = PlayerPrefs.GetInt(RestoreKey, RestoreHealthAmount);
         BombAmount = PlayerPrefs.GetInt(Bombkey, BombAmount);
         FreezeAmount = PlayerPrefs.GetInt(FreezeKey, FreezeAmount);
@@ -107,13 +150,22 @@ public class FundsManager : MonoBehaviour
         AttackCost = PlayerPrefs.GetInt(AttackCostKey, AttackCost);
         AttackLevel = PlayerPrefs.GetInt(AttackLevelKey, AttackLevel);
         ProgressCost = PlayerPrefs.GetInt(ProgressCostKey, ProgressCost);
-        MinionState = PlayerPrefs.GetInt(MinionPrefs, MinionState);
+        RestoreCost = PlayerPrefs.GetInt(RestoreCostkey, RestoreCost);
+        BombCost = PlayerPrefs.GetInt(BombCostkey, BombCost);
+        FreezeCost = PlayerPrefs.GetInt(FreezeCostkey, FreezeCost);
+        ShieldCost = PlayerPrefs.GetInt(ShieldCostkey, ShieldCost);
+        AllieCost = PlayerPrefs.GetInt(AllieCostkey, AllieCost);
     }
 
     public void SaveFunds()
     {
         PlayerPrefs.SetInt(Fundskey, FundsAmount);
         PlayerPrefs.Save();
+    }
+
+    public void LoadFunds()
+    {
+        FundsAmount = PlayerPrefs.GetInt(Fundskey, FundsAmount);
     }
 
     public void SaveRestorePower()
@@ -140,6 +192,34 @@ public class FundsManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void SaveRestoreCost()
+    {
+        PlayerPrefs.SetInt(RestoreCostkey, RestoreCost);
+        PlayerPrefs.Save();
+    }
+    public void SaveBombCost()
+    {
+        PlayerPrefs.SetInt(BombCostkey, BombCost);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveFreezeCost()
+    {
+        PlayerPrefs.SetInt(FreezeCostkey, FreezeCost);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveShieldCost()
+    {
+        PlayerPrefs.SetInt(ShieldCostkey, ShieldCost);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveAllieCost()
+    {
+        PlayerPrefs.SetInt(ShieldCostkey, ShieldCost);
+        PlayerPrefs.Save();
+    }
     public void SaveDodgeLevel()
     {
         PlayerPrefs.SetInt(DodgeKey, DodgeLevel);
@@ -193,41 +273,53 @@ public class FundsManager : MonoBehaviour
     {
         if (FundsAmount >= 100)
         {
-            if (Tag == "Restore" && FundsAmount >= 100)
+            if (Tag == "Restore" && FundsAmount >= RestoreCost)
             {
-                FundsAmount -= 100;
+                FundsAmount -= RestoreCost;
                 RestoreHealthAmount++;
+                RestoreCost += 50;
+                SaveRestoreCost();
                 UpdateAllTexts(FundsText, FundsAmount);
                 UpdateAllTexts(RestoreText, RestoreHealthAmount);
                 SaveFunds();
                 SaveRestorePower();
+                RestoreCostText[0].text = RestoreCost.ToString();
             }
-            else if (Tag == "Bomb" && FundsAmount >= 100)
+            else if (Tag == "Bomb" && FundsAmount >= BombCost)
             {
-                FundsAmount -= 100;
+                FundsAmount -= BombCost;
                 BombAmount++;
+                BombCost += 50;
+                SaveBombCost();
                 UpdateAllTexts(BombText, BombAmount);
                 UpdateAllTexts(FundsText, FundsAmount);
                 SaveFunds();
                 SaveBombPower();
+                BombCostText[0].text = BombCost.ToString();
             }
-            else if (Tag == "Freeze" && FundsAmount >= 100)
+            else if (Tag == "Freeze" && FundsAmount >= FreezeCost)
             {
-                FundsAmount -= 100;
+                FundsAmount -= FreezeCost;
                 FreezeAmount++;
+                FreezeCost += 50;
+                SaveFreezeCost();
                 UpdateAllTexts(FreezeText, FreezeAmount);
                 UpdateAllTexts(FundsText, FundsAmount);
                 SaveFunds();
                 SaveFreezePower();
+                FreezeCostText[0].text = FreezeCost.ToString();
             }
-            else if (Tag == "Shield" && FundsAmount >= 100)
+            else if (Tag == "Shield" && FundsAmount >= ShieldCost)
             {
-                FundsAmount -= 100;
+                FundsAmount -= ShieldCost;
                 ShieldAmount++;
+                ShieldCost += 50;
+                SaveShieldCost();
                 UpdateAllTexts(ShieldText, ShieldAmount);
                 UpdateAllTexts(FundsText, FundsAmount);
                 SaveFunds();
                 SaveShieldPower();
+                ShieldCostText[0].text = ShieldCost.ToString();
             }
             else if (Tag == "Dodge" && FundsAmount >= DodgeCost)
             {
@@ -266,14 +358,16 @@ public class FundsManager : MonoBehaviour
                 ProgressLevelText[0].text = ProgressLevel.ToString();
                 UpdateAllTexts(ProgressCostText, ProgressCost);
             }
-            else if(Tag == "Minion" && FundsAmount >= 500)
+            else if(Tag == "Minion" && FundsAmount >= AllieCost)
             {
-                FundsAmount -= 500;
+                FundsAmount -= AllieCost;
                 MinionState++;
+                AllieCost += 250;
                 LoadMinion();
+                SaveAllieCost();
                 SaveFunds();
                 UpdateAllTexts(FundsText, FundsAmount);
-                MinionButton.interactable = false;
+                AllieCostText[0].text = AllieCost.ToString();
             }
         }
     }

@@ -11,6 +11,8 @@ public class Attack : MonoBehaviour
     public List<GameObject> Enemies = new List<GameObject>();
     public GameObject CriticalHit;
     public GameObject NormalHit;
+    public GameObject[] Miss;
+    public GameObject[] MissEnemy;
 
     [Header("Prefabs")]
     private GameObject[] AllyPrefabs;
@@ -34,10 +36,15 @@ public class Attack : MonoBehaviour
     public GameObject AlliesHolder;
     public GameObject EnemiesHolder;
     public GameObject MinionAllie;
+    public GameObject Allie2;
+    public GameObject Allie3;
+    public GameObject[] EnemiesArray;
     public int teamHPIncreasePerLevel = 50; 
     public float enemyCriticalChance = 0.1f;
+    public float enemyMissChance = 0.3f;
     public int baseEnemyDamage = 25;
     public int WinFundsPerLevel;
+    public Text WinFundsText;
 
     private int allySpawnedCount = 0;
     private int enemySpawnedCount = 0;
@@ -85,17 +92,64 @@ public class Attack : MonoBehaviour
                 GameObject enemy = EnemiesHolder.transform.GetChild(i).gameObject;
                 Enemies.Add(enemy);
             }
+            fundsManager.LoadMinion();
+            
             if (fundsManager.MinionState == 1)
             {
                 MinionAllie.gameObject.SetActive(true);
-                AlliesMaxHP += 50;
+                EnemiesArray[0].gameObject.SetActive(true);
+                AlliesCurrentHP += 50;
+                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
+                AlliesCurrentHP = AlliesMaxHP;
+                EnemiesCurrentHP += 50;
+                EnemiesMaxHP = EnemiesCurrentHP;
+               
+                Debug.Log("first if");
             }
-            
-            AlliesMaxHP = fundsManager.ProgressLevel;
-            AlliesCurrentHP = AlliesMaxHP;
-            EnemiesMaxHP = 100;
-            EnemiesCurrentHP = EnemiesMaxHP;
+            if (fundsManager.MinionState == 2)
+            {
+                MinionAllie.gameObject.SetActive(true);
+                Allie2.gameObject.SetActive(true);
+                EnemiesArray[0].gameObject.SetActive(true);
+                EnemiesArray[1].gameObject.SetActive(true);
+                AlliesCurrentHP += 100;
+                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
+                AlliesCurrentHP = AlliesMaxHP;
+                EnemiesCurrentHP += 100;
+                EnemiesMaxHP = EnemiesCurrentHP;
+                Debug.Log("second if");
 
+            }
+            if (fundsManager.MinionState == 3)
+            {
+                MinionAllie.gameObject.SetActive(true);
+                Allie2.gameObject.SetActive(true);
+                Allie3.gameObject.SetActive(true);
+                EnemiesArray[0].gameObject.SetActive(true);
+                EnemiesArray[1].gameObject.SetActive(true);
+                AlliesCurrentHP += 150;
+                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
+                AlliesCurrentHP = AlliesMaxHP;
+                EnemiesCurrentHP += 100;
+                EnemiesMaxHP = EnemiesCurrentHP;
+                Debug.Log("third if");
+
+            }
+            else if (fundsManager.MinionState == 0)
+            {
+                AlliesMaxHP = fundsManager.ProgressLevel + 100;
+                AlliesCurrentHP = AlliesMaxHP;
+                EnemiesMaxHP = 150;
+                EnemiesCurrentHP = EnemiesMaxHP;
+            }
+            Debug.Log(AlliesMaxHP);
+            Debug.Log(EnemiesMaxHP);
+
+            AlliesHealthText.text = AlliesMaxHP.ToString();
+            EnemiesHealthText.text = EnemiesMaxHP.ToString();
+            Debug.Log("test");
+
+            fundsManager.LoadFunds();
             RefreshHealthUI();
         }
         else
@@ -140,7 +194,7 @@ public class Attack : MonoBehaviour
             {
                 WinFundsPerLevel += 50;
                 fundsManager.FundsAmount += WinFundsPerLevel;
-                fundsManager.FundsText[0].text = WinFundsPerLevel.ToString();
+                WinFundsText.text = WinFundsPerLevel.ToString();
                 fundsManager.SaveFunds();
                 ProceedToNextLevel();
             }
@@ -223,8 +277,8 @@ public class Attack : MonoBehaviour
         yield return new WaitForSeconds(2f);
         DefendGameObject.gameObject.SetActive(false);
         AttackButton.interactable = false;
-        UsedDefendButton--;
         EnemyAttackMethod();
+        
     }
 
     IEnumerator WaitForHealthImg()
@@ -269,8 +323,8 @@ public class Attack : MonoBehaviour
             Debug.Log("All enemies defeated!");
 
             WinFundsPerLevel += 50;
-            fundsManager.FundsAmount += WinFundsPerLevel;
-            fundsManager.FundsText[0].text = WinFundsPerLevel.ToString();
+            fundsManager.FundsAmount = fundsManager.FundsAmount + WinFundsPerLevel;
+            WinFundsText.text = WinFundsPerLevel.ToString();
             fundsManager.SaveFunds();
             ProceedToNextLevel();
         }
@@ -292,23 +346,75 @@ public class Attack : MonoBehaviour
     IEnumerator WaitForEnemy()
     {
         yield return new WaitForSeconds(2f);
+       
+    }
+
+    IEnumerator WaitForMissEnemies()
+    {
+        yield return new WaitForSeconds(2f);
+        GameObject[] allieMissObjects = GameObject.FindGameObjectsWithTag("MissEnemies");
+
+        foreach (var missItem in allieMissObjects)
+        {
+            missItem.SetActive(true);
+
+            Text text = missItem.GetComponent<Text>();
+            if (text != null)
+            {
+                text.enabled = false;
+            }
+        }
+    }
+    IEnumerator WaitForMissAllie()
+    {
+        yield return new WaitForSeconds(2f);
+        GameObject[] allieMissObjects = GameObject.FindGameObjectsWithTag("MissAllie");
+
+        foreach (var missItem in allieMissObjects)
+        {
+            missItem.SetActive(true);
+
+            Text text = missItem.GetComponent<Text>();
+            if (text != null)
+            {
+                text.enabled = false;
+            }
+        }
     }
 
     public void AttachMethod()
     {
             int damage = 50;
-            if (UnityEngine.Random.value <= 0.2f)
-            {
+        float roll = UnityEngine.Random.value;
 
-                damage += 50;
-                CriticalHit.SetActive(true);
-            }
-            else
-            {
-                NormalHit.SetActive(true);
-            }
+        if (roll <= 0.1f) 
+        {
+            damage = 0;
+            GameObject[] allieMissObjects = GameObject.FindGameObjectsWithTag("MissEnemies");
 
-            EnemiesCurrentHP -= damage + fundsManager.AttackLevel;
+            foreach (var missItem in allieMissObjects)
+            {
+                missItem.SetActive(true);
+
+                Text text = missItem.GetComponent<Text>();
+                if (text != null)
+                {
+                    text.enabled = true;
+                    StartCoroutine(WaitForMissEnemies());
+                }
+            }
+        }
+        else if (roll <= 0.3f) 
+        {
+            damage += 50;
+            CriticalHit.SetActive(true);
+        }
+        else 
+        {
+            NormalHit.SetActive(true);
+        }
+
+        EnemiesCurrentHP -= damage + fundsManager.AttackLevel;
             if (EnemiesCurrentHP < 0) EnemiesCurrentHP = 0;
             AttackGameObject.SetActive(true);
             RefreshHealthUI();
@@ -318,22 +424,46 @@ public class Attack : MonoBehaviour
     public void EnemyAttackMethod()
     {
         StartCoroutine(WaitForEnemy());
+        float roll = UnityEngine.Random.value;
         int damage = baseEnemyDamage;
-        if (UnityEngine.Random.value <= enemyCriticalChance)
+        if (roll <= enemyMissChance)
+        {
+            damage = 0;
+            GameObject[] allieMissObjects = GameObject.FindGameObjectsWithTag("MissAllie");
+
+            foreach (var missItem in allieMissObjects)
+            {
+                missItem.SetActive(true);
+
+                Text text = missItem.GetComponent<Text>();
+                if (text != null)
+                {
+                    text.enabled = true;
+                    StartCoroutine(WaitForMissAllie());
+                }
+            }
+
+        }
+        else if (roll <= enemyMissChance + enemyCriticalChance) 
         {
             if (UsedDefendButton == 1)
             {
                 damage = 0;
-                CriticalHit.SetActive(true);
+                UsedDefendButton--;
             }
             else
             {
                 damage += 50;
-                CriticalHit.SetActive(true);
             }
+            CriticalHit.SetActive(true);
         }
         else
         {
+            if (UsedDefendButton == 1)
+            {
+                damage = 0;
+                UsedDefendButton--;
+            }
             NormalHit.SetActive(true);
         }
 
@@ -344,8 +474,9 @@ public class Attack : MonoBehaviour
 
         if (AlliesCurrentHP <= 0)
         {
-            fundsManager.FundsAmount += WinFundsPerLevel;
-            fundsManager.FundsText[0].text = WinFundsPerLevel.ToString();
+            Debug.Log(fundsManager.FundsAmount);
+            fundsManager.FundsAmount = fundsManager.FundsAmount + WinFundsPerLevel;
+            WinFundsText.text = WinFundsPerLevel.ToString();
             fundsManager.SaveFunds();
             YouLose.gameObject.SetActive(true);
             return;
@@ -360,28 +491,32 @@ public class Attack : MonoBehaviour
         YouWin.gameObject.SetActive(true);
         bool addNewUnits = LevelCount < 7 && UnityEngine.Random.Range(0, 2) == 0;
 
-        if (addNewUnits && allySpawnedCount < AllyPrefabs.Length && enemySpawnedCount < EnemyPrefabs.Length)
-        {
-            GameObject allyPrefab = AllyPrefabs[allySpawnedCount];
-            Transform allySpawn = AllySpawnPoints[allySpawnedCount];
-            GameObject newAlly = Instantiate(allyPrefab, allySpawn.position, Quaternion.identity, AlliesHolder.transform);
-            Allies.Add(newAlly);
-            allySpawnedCount++;
+        //if (addNewUnits && allySpawnedCount < AllyPrefabs.Length && enemySpawnedCount < EnemyPrefabs.Length)
+        //{
+        //    GameObject allyPrefab = AllyPrefabs[allySpawnedCount];
+        //    Transform allySpawn = AllySpawnPoints[allySpawnedCount];
+        //    GameObject newAlly = Instantiate(allyPrefab, allySpawn.position, Quaternion.identity, AlliesHolder.transform);
+        //    Allies.Add(newAlly);
+        //    allySpawnedCount++;
 
-            GameObject enemyPrefab = EnemyPrefabs[enemySpawnedCount];
-            Transform enemySpawn = EnemySpawnPoints[enemySpawnedCount];
-            GameObject newEnemy = Instantiate(enemyPrefab, enemySpawn.position, Quaternion.identity, EnemiesHolder.transform);
-            Enemies.Add(newEnemy);
-            enemySpawnedCount++;
-        }
-        else
-        {
-            AlliesMaxHP += teamHPIncreasePerLevel;
-            EnemiesMaxHP += teamHPIncreasePerLevel;
-            AlliesCurrentHP = AlliesMaxHP;
-            EnemiesCurrentHP = EnemiesMaxHP;
-        }
+        //    GameObject enemyPrefab = EnemyPrefabs[enemySpawnedCount];
+        //    Transform enemySpawn = EnemySpawnPoints[enemySpawnedCount];
+        //    GameObject newEnemy = Instantiate(enemyPrefab, enemySpawn.position, Quaternion.identity, EnemiesHolder.transform);
+        //    Enemies.Add(newEnemy);
+        //    enemySpawnedCount++;
+        //}
+        //else
+        //{
+        //    AlliesMaxHP += teamHPIncreasePerLevel;
+        //    EnemiesMaxHP += teamHPIncreasePerLevel;
+        //    AlliesCurrentHP = AlliesMaxHP;
+        //    EnemiesCurrentHP = EnemiesMaxHP;
+        //}
 
+        AlliesMaxHP += teamHPIncreasePerLevel;
+        EnemiesMaxHP += teamHPIncreasePerLevel;
+        AlliesCurrentHP = AlliesMaxHP;
+        EnemiesCurrentHP = EnemiesMaxHP;
         LevelCount++;
 
         if (LevelCount < levelLogic.LevelsTexts.Length)
