@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Attack : MonoBehaviour
+public class Farm : MonoBehaviour
 {
     [Header("Gameobjects")]
     public List<GameObject> Allies = new List<GameObject>();
@@ -33,11 +33,11 @@ public class Attack : MonoBehaviour
     public Button AttackButton;
     public Button DefendButton;
 
-    public GameObject AlliesHolder;
+    public GameObject FarmHolder;
     public GameObject EnemiesHolder;
-    public GameObject MinionAllie;
-    public GameObject Allie2;
-    public GameObject Allie3;
+    public GameObject FarmAllie;
+    public GameObject FarmAllie2;
+    public GameObject FarmAllie3;
     public GameObject[] EnemiesArray;
     public int teamHPIncreasePerLevel = 50; 
     public float enemyCriticalChance = 0.1f;
@@ -50,14 +50,14 @@ public class Attack : MonoBehaviour
     private int enemySpawnedCount = 0;
 
     [Header("Team HP")]
-    public int AlliesMaxHP;
-    public int AlliesCurrentHP;
+    public int FarmAlliesMaxHP;
+    public int FarmAlliesCurrentHP;
 
     public int EnemiesMaxHP;
     public int EnemiesCurrentHP;
 
-    public Scrollbar AlliesHealthSlider;
-    public Text AlliesHealthText;
+    public Scrollbar FarmAlliesHealthSlider;
+    public Text FarmAlliesHealthText;
 
     public Scrollbar EnemiesHealthSlider;
     public Text EnemiesHealthText;
@@ -81,9 +81,9 @@ public class Attack : MonoBehaviour
 
         if (fundsManager != null && fundsManager.ProgressLevel > 0)
         {
-            for (int i = 0; i < AlliesHolder.transform.childCount; i++)
+            for (int i = 0; i < FarmHolder.transform.childCount; i++)
             {
-                GameObject ally = AlliesHolder.transform.GetChild(i).gameObject;
+                GameObject ally = FarmHolder.transform.GetChild(i).gameObject;
                 Allies.Add(ally);
             }
 
@@ -96,11 +96,11 @@ public class Attack : MonoBehaviour
             
             if (fundsManager.MinionState == 1)
             {
-                MinionAllie.gameObject.SetActive(true);
+                FarmAllie.gameObject.SetActive(true);
                 EnemiesArray[0].gameObject.SetActive(true);
-                AlliesCurrentHP += 50;
-                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
-                AlliesCurrentHP = AlliesMaxHP;
+                FarmAlliesCurrentHP += 50;
+                FarmAlliesMaxHP = FarmAlliesCurrentHP + fundsManager.ProgressLevel;
+                FarmAlliesCurrentHP = FarmAlliesMaxHP;
                 EnemiesCurrentHP += 50;
                 EnemiesMaxHP = EnemiesCurrentHP;
                
@@ -108,13 +108,13 @@ public class Attack : MonoBehaviour
             }
             if (fundsManager.MinionState == 2)
             {
-                MinionAllie.gameObject.SetActive(true);
-                Allie2.gameObject.SetActive(true);
+                FarmAllie.gameObject.SetActive(true);
+                FarmAllie2.gameObject.SetActive(true);
                 EnemiesArray[0].gameObject.SetActive(true);
                 EnemiesArray[1].gameObject.SetActive(true);
-                AlliesCurrentHP += 100;
-                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
-                AlliesCurrentHP = AlliesMaxHP;
+                FarmAlliesCurrentHP += 100;
+                FarmAlliesMaxHP = FarmAlliesCurrentHP + fundsManager.ProgressLevel;
+                FarmAlliesCurrentHP = FarmAlliesMaxHP;
                 EnemiesCurrentHP += 100;
                 EnemiesMaxHP = EnemiesCurrentHP;
                 Debug.Log("second if");
@@ -122,14 +122,14 @@ public class Attack : MonoBehaviour
             }
             if (fundsManager.MinionState == 3)
             {
-                MinionAllie.gameObject.SetActive(true);
-                Allie2.gameObject.SetActive(true);
-                Allie3.gameObject.SetActive(true);
+                FarmAllie.gameObject.SetActive(true);
+                FarmAllie2.gameObject.SetActive(true);
+                FarmAllie3.gameObject.SetActive(true);
                 EnemiesArray[0].gameObject.SetActive(true);
                 EnemiesArray[1].gameObject.SetActive(true);
-                AlliesCurrentHP += 150;
-                AlliesMaxHP = AlliesCurrentHP + fundsManager.ProgressLevel;
-                AlliesCurrentHP = AlliesMaxHP;
+                FarmAlliesCurrentHP += 150;
+                FarmAlliesMaxHP = FarmAlliesCurrentHP + fundsManager.ProgressLevel;
+                FarmAlliesCurrentHP = FarmAlliesMaxHP;
                 EnemiesCurrentHP += 100;
                 EnemiesMaxHP = EnemiesCurrentHP;
                 Debug.Log("third if");
@@ -137,15 +137,15 @@ public class Attack : MonoBehaviour
             }
             else if (fundsManager.MinionState == 0)
             {
-                AlliesMaxHP = fundsManager.ProgressLevel + 100;
-                AlliesCurrentHP = AlliesMaxHP;
+                FarmAlliesMaxHP = fundsManager.ProgressLevel + 100;
+                FarmAlliesCurrentHP = FarmAlliesMaxHP;
                 EnemiesMaxHP = 150;
                 EnemiesCurrentHP = EnemiesMaxHP;
             }
-            Debug.Log(AlliesMaxHP);
+            Debug.Log(FarmAlliesMaxHP);
             Debug.Log(EnemiesMaxHP);
 
-            AlliesHealthText.text = AlliesMaxHP.ToString();
+            FarmAlliesHealthText.text = FarmAlliesMaxHP.ToString();
             EnemiesHealthText.text = EnemiesMaxHP.ToString();
             Debug.Log("test");
 
@@ -165,9 +165,9 @@ public class Attack : MonoBehaviour
             fundsManager.RestoreHealthAmount--;
             fundsManager.RestoreText[0].text = fundsManager.RestoreHealthAmount.ToString();
             fundsManager.SaveRestorePower();
-            AlliesCurrentHP += 100;
-            AlliesMaxHP = AlliesCurrentHP;
-            AlliesHealthText.text = AlliesMaxHP.ToString();
+            FarmAlliesCurrentHP += 100;
+            FarmAlliesMaxHP = FarmAlliesCurrentHP;
+            FarmAlliesHealthText.text = FarmAlliesMaxHP.ToString();
             HealthImg.gameObject.SetActive(true);
            StartCoroutine(WaitForHealthImg());
         }
@@ -258,14 +258,14 @@ public class Attack : MonoBehaviour
 
     void RefreshHealthUI()
     {
-        if (AlliesHealthSlider != null)
-            AlliesHealthSlider.size = AlliesMaxHP > 0 ? Mathf.Clamp01((float)AlliesCurrentHP / AlliesMaxHP) : 0;
+        if (FarmAlliesHealthSlider != null)
+            FarmAlliesHealthSlider.size = FarmAlliesMaxHP > 0 ? Mathf.Clamp01((float)FarmAlliesCurrentHP / FarmAlliesMaxHP) : 0;
 
         if (EnemiesHealthSlider != null)
             EnemiesHealthSlider.size = EnemiesMaxHP > 0 ? Mathf.Clamp01((float)EnemiesCurrentHP / EnemiesMaxHP) : 0;
 
-        if (AlliesHealthText != null)
-            AlliesHealthText.text = AlliesCurrentHP.ToString();
+        if (FarmAlliesHealthText != null)
+            FarmAlliesHealthText.text = FarmAlliesCurrentHP.ToString();
 
         if (EnemiesHealthText != null)
             EnemiesHealthText.text = EnemiesCurrentHP.ToString();
@@ -322,8 +322,8 @@ public class Attack : MonoBehaviour
         {
             Debug.Log("All enemies defeated!");
 
-            WinFundsPerLevel += 50;
-            fundsManager.FundsAmount = fundsManager.FundsAmount + WinFundsPerLevel;
+            WinFundsPerLevel = 50;
+            fundsManager.FundsAmount += WinFundsPerLevel;
             WinFundsText.text = WinFundsPerLevel.ToString();
             fundsManager.SaveFunds();
             ProceedToNextLevel();
@@ -467,12 +467,12 @@ public class Attack : MonoBehaviour
             NormalHit.SetActive(true);
         }
 
-        AlliesCurrentHP -= damage;
-        if (AlliesCurrentHP < 0) AlliesCurrentHP = 0;
+        FarmAlliesCurrentHP -= damage;
+        if (FarmAlliesCurrentHP < 0) FarmAlliesCurrentHP = 0;
 
         RefreshHealthUI();
 
-        if (AlliesCurrentHP <= 0)
+        if (FarmAlliesCurrentHP <= 0)
         {
             Debug.Log(fundsManager.FundsAmount);
             fundsManager.FundsAmount = fundsManager.FundsAmount + WinFundsPerLevel;
@@ -513,9 +513,9 @@ public class Attack : MonoBehaviour
         //    EnemiesCurrentHP = EnemiesMaxHP;
         //}
 
-        AlliesMaxHP += teamHPIncreasePerLevel;
+        FarmAlliesMaxHP += teamHPIncreasePerLevel;
         EnemiesMaxHP += teamHPIncreasePerLevel;
-        AlliesCurrentHP = AlliesMaxHP;
+        FarmAlliesCurrentHP = FarmAlliesMaxHP;
         EnemiesCurrentHP = EnemiesMaxHP;
         LevelCount++;
 
@@ -526,9 +526,9 @@ public class Attack : MonoBehaviour
                 levelLogic.LevelsTexts[LevelCount - 1].gameObject.SetActive(false);
         }
 
-        AlliesHealthSlider.size = 1;
+        FarmAlliesHealthSlider.size = 1;
         EnemiesHealthSlider.size = 1;
-        AlliesHealthText.text = AlliesMaxHP.ToString();
+        FarmAlliesHealthText.text = FarmAlliesMaxHP.ToString();
         EnemiesHealthText.text = EnemiesMaxHP.ToString();
     }
 

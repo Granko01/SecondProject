@@ -65,7 +65,7 @@ public class FundsManager : MonoBehaviour
 
 
     public Button MinionButton;
-    public Attack attack;
+    public Farm farm;
 
     void Start()
     {

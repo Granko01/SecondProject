@@ -24,7 +24,7 @@ public class LevelLogic : MonoBehaviour
 
     public void LevelManager()
     {
-        SceneManager.LoadScene("FirstLevel");
+        SceneManager.LoadScene("Farm");
     }
 
     public void ResumeMethod()
@@ -40,6 +40,6 @@ public class LevelLogic : MonoBehaviour
     }
     public void ExitToHome()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("FarmMenu");
     }
 }
