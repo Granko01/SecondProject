@@ -37,7 +37,6 @@ public class Farm : MonoBehaviour
     public GameObject EnemiesHolder;
     public GameObject FarmAllie;
     public GameObject FarmAllie2;
-    public GameObject FarmAllie3;
     public GameObject[] EnemiesArray;
     public int teamHPIncreasePerLevel = 50; 
     public float enemyCriticalChance = 0.1f;
@@ -118,21 +117,6 @@ public class Farm : MonoBehaviour
                 EnemiesCurrentHP += 100;
                 EnemiesMaxHP = EnemiesCurrentHP;
                 Debug.Log("second if");
-
-            }
-            if (fundsManager.MinionState == 3)
-            {
-                FarmAllie.gameObject.SetActive(true);
-                FarmAllie2.gameObject.SetActive(true);
-                FarmAllie3.gameObject.SetActive(true);
-                EnemiesArray[0].gameObject.SetActive(true);
-                EnemiesArray[1].gameObject.SetActive(true);
-                FarmAlliesCurrentHP += 150;
-                FarmAlliesMaxHP = FarmAlliesCurrentHP + fundsManager.ProgressLevel;
-                FarmAlliesCurrentHP = FarmAlliesMaxHP;
-                EnemiesCurrentHP += 100;
-                EnemiesMaxHP = EnemiesCurrentHP;
-                Debug.Log("third if");
 
             }
             else if (fundsManager.MinionState == 0)
